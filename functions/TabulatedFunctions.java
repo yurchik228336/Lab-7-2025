@@ -129,6 +129,18 @@ public class TabulatedFunctions {
         }
         return createTabulatedFunction(pts);
     }
+    
+    public static TabulatedFunction inputTabulatedFunction(Class<? extends TabulatedFunction> functionClass, InputStream in) throws IOException {
+        DataInputStream dis = new DataInputStream(in);
+        int n = dis.readInt();
+        FunctionPoint[] pts = new FunctionPoint[n];
+        for (int i = 0; i < n; i++) {
+            double x = dis.readDouble();
+            double y = dis.readDouble();
+            pts[i] = new FunctionPoint(x, y);
+        }
+        return createTabulatedFunction(functionClass, pts);
+    }
 
     public static TabulatedFunction readTabulatedFunction(Reader in) throws IOException {
         StreamTokenizer st = new StreamTokenizer(in);
@@ -155,5 +167,32 @@ public class TabulatedFunctions {
             pts[i] = new FunctionPoint(x, y);
         }
         return createTabulatedFunction(pts);
+    }
+    
+    public static TabulatedFunction readTabulatedFunction(Class<? extends TabulatedFunction> functionClass, Reader in) throws IOException {
+        StreamTokenizer st = new StreamTokenizer(in);
+        st.resetSyntax();
+        st.wordChars('0', '9');
+        st.wordChars('-', '-');
+        st.wordChars('+', '+');
+        st.wordChars('.', '.');
+        st.whitespaceChars(0, ' ');
+        int t = st.nextToken();
+        if (t != StreamTokenizer.TT_WORD) {
+            throw new IOException();
+        }
+        int n = Integer.parseInt(st.sval);
+        if (n < 2) {
+            throw new IOException();
+        }
+        FunctionPoint[] pts = new FunctionPoint[n];
+        for (int i = 0; i < n; i++) {
+            if (st.nextToken() != StreamTokenizer.TT_WORD) throw new IOException();
+            double x = Double.parseDouble(st.sval);
+            if (st.nextToken() != StreamTokenizer.TT_WORD) throw new IOException();
+            double y = Double.parseDouble(st.sval);
+            pts[i] = new FunctionPoint(x, y);
+        }
+        return createTabulatedFunction(functionClass, pts);
     }
 }

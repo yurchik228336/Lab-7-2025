@@ -6,3 +6,4 @@ public interface TabulatedFunctionFactory {
     TabulatedFunction createTabulatedFunction(FunctionPoint[] points);
 }
 
+
